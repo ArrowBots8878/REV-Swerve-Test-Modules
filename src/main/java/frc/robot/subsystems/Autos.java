@@ -30,9 +30,9 @@ public class Autos {
     autoTab.add(autoChooser);
     m_commandMap = new HashMap<>();
 
-    autoChooser.addOption("NameOfAutoPath", "NameOfAutoPath");
+    autoChooser.addOption("Square", "Square");
 
-    m_commandMap.put("NameOfAutoPath", new PathPlannerAuto("NameOfAutoPathBLUE"));
+    m_commandMap.put("Square", new PathPlannerAuto("Square"));
   }
 
 
