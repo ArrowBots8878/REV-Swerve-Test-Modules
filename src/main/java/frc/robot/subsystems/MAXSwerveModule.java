@@ -14,7 +14,6 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-
 import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
@@ -36,6 +35,9 @@ public class MAXSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
+
+
+   //Isaac: lay the blue the blue print
   public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
@@ -109,12 +111,20 @@ public class MAXSwerveModule {
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
   }
+  //Isaac: blue print stage ends
 
   /**
    * Returns the current state of the module.
    *
    * @return The current state of the module.
    */
+
+   //
+
+   //Isaac: fetches the velocity the wheel is moving at and at what angle the wheel is pointing
+   // this is a method to send the velocity and angle data to other files
+   // state is a custom data type that stores both pieces of information
+   // this is a method and provides a way for other parts of code to fetch information
   public SwerveModuleState getState() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
@@ -127,6 +137,9 @@ public class MAXSwerveModule {
    *
    * @return The current position of the module.
    */
+
+  //Isaac: a way for fetching the angle of the wheel
+  //this is just another fetching method
   public SwerveModulePosition getPosition() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
@@ -140,6 +153,9 @@ public class MAXSwerveModule {
    *
    * @param desiredState Desired state with speed and angle.
    */
+
+  //Isaac: set the wheel angle and velocity to whatever is stored in desired state
+  //makes the wheel go to the desired state in the shortest time possible while also keeping everything withing the bounds of physics
   public void setDesiredState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
@@ -158,6 +174,7 @@ public class MAXSwerveModule {
   }
 
   /** Zeroes all the SwerveModule encoders. */
+  //Isaac: just sets the distance a wheel has traveled to 0
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
