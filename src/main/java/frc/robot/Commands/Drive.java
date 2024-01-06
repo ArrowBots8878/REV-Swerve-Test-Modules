@@ -37,12 +37,22 @@ public class Drive extends CommandBase {
   @Override
   public void execute() 
   {
+    //scaling factor for velocity
     double velocityScalingFactor = 0.5;
+
+    //scaling factor for rotational velocity
     double rotationalVelocityScalingFactor = 1;
 
+    //a variable on whether you want to square inputs or not, if you do, only change the boolean to true
+    boolean squaredInputs = false;
+    velocityScalingFactor = squaredInputs ? velocityScalingFactor : Math.pow(velocityScalingFactor, 2);
+
+    //applies the scaling factors to each of the values from the joysticks which are stored in the suppliers
     double xVelocity = (double)m_xVelocitySupplier.get() * velocityScalingFactor;
     double yVelocity = (double)m_yVelcoitySupplier.get() * velocityScalingFactor;
     double rotationalVelocity = (double)m_rotationalVelocitySupplier.get() * rotationalVelocityScalingFactor;
+
+    //applies the scaled velocities to the drive subsystem
     m_DriveSubsystem.drive(xVelocity, yVelocity, rotationalVelocity, true, true);
   }
 
