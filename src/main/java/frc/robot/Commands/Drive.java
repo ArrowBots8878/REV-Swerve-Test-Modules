@@ -4,15 +4,25 @@
 
 package frc.robot.Commands;
 
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class Drive extends CommandBase {
   /** Creates a new Drive. */
   public final DriveSubsystem m_DriveSubsystem;
+  Supplier m_xVelocitySupplier;
+  Supplier m_yVelcoitySupplier;
+  Supplier m_rotationalVelocitySupplier;
   
 
-  public Drive(DriveSubsystem driveSubsystem ) {
+  public Drive(DriveSubsystem driveSubsystem, Supplier xVelocitySupplier, Supplier yVelocitySupplier, Supplier rotationalVelocitySupplier) {
+    m_xVelocitySupplier = xVelocitySupplier;
+    m_yVelcoitySupplier = yVelocitySupplier;
+    m_rotationalVelocitySupplier = rotationalVelocitySupplier;
     m_DriveSubsystem = driveSubsystem;
     addRequirements(m_DriveSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,8 +37,13 @@ public class Drive extends CommandBase {
   @Override
   public void execute() 
   {
+    double velocityScalingFactor = 0.5;
+    double rotationalVelocityScalingFactor = 1;
 
-    m_DriveSubsystem.drive(0, 0, 0, isFinished(), isFinished());
+    double xVelocity = (double)m_xVelocitySupplier.get() * velocityScalingFactor;
+    double yVelocity = (double)m_yVelcoitySupplier.get() * velocityScalingFactor;
+    double rotationalVelocity = (double)m_rotationalVelocitySupplier.get() * rotationalVelocityScalingFactor;
+    m_DriveSubsystem.drive(xVelocity, yVelocity, rotationalVelocity, true, true);
   }
 
   // Called once the command ends or is interrupted.
