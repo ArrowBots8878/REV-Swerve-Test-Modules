@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -86,6 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
+                this::getIsFieldFlipped,
                 this // Reference to this subsystem to set requirements
         );
 
@@ -297,6 +300,10 @@ public class DriveSubsystem extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+  }
+
+  public boolean getIsFieldFlipped(){
+    return DriverStation.getAlliance() == Alliance.Red;
   }
 
   /**

@@ -26,18 +26,21 @@ public class Autos {
     m_drivetrainSubsystem = drivetrainSubsystem;
     //AutoConstants.eventMap.put("name of command to run along path", "command itself");
     
-    autoChooser = new SendableChooser<>();
+    autoChooser = new SendableChooser<>(); //auto chooser is the widget on shuffleboard so that you can select which auto you want
     autoTab.add(autoChooser);
-    m_commandMap = new HashMap<>();
+    m_commandMap = new HashMap<>(); //the command map is where the auto are stored on a table
 
-    autoChooser.addOption("Square", "Square");
+    autoChooser.addOption("2PieceAmplifier", "2PieceAmplifier");
+    autoChooser.addOption("2PieceAmplifierCenter", "2PieceAmplifierCenter");
 
-    m_commandMap.put("Square", new PathPlannerAuto("Square"));
+    m_commandMap.put("2PieceAmplifier", new PathPlannerAuto("2PieceAmplifier"));
+    m_commandMap.put("2PieceAmplifierCenter", new PathPlannerAuto("2PieceAmplifierCenter"));
   }
 
 
 
     public Command getAutonomousCommand() {
+      //This command is taking input from the widget on shuffleboard, looking it up on the command map table, and return a fully completed path for the robot to run
         String auto = autoChooser.getSelected();
         return m_commandMap.get(auto);
     }
