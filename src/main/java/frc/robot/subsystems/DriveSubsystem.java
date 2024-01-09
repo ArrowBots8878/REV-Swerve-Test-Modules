@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -63,9 +68,35 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
+
+
+
   /** Creates a new DriveSubsystem. */
+  //This is the constructor
   public DriveSubsystem() {
+    AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                this // Reference to this subsystem to set requirements
+        );
+
   }
+
+
+
+
+
+
+
 
   @Override
   public void periodic() {
@@ -87,6 +118,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  public void resetPose(Pose2d setPose){
+    m_odometry.resetPosition(new Rotation2d(getHeading()), getModulePositions(), setPose);
   }
 
   /**
@@ -167,6 +202,11 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
       m_currentRotation = rot;
+
+
+
+
+
     }
 
     // Convert the commanded speeds into the correct units for the drivetrain
@@ -186,6 +226,23 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
+
+  public void driveRobotRelative(ChassisSpeeds chassisSpeeds)
+  {
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeeds()
+  {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+  }
+
   /**
    * Sets the wheels into an X formation to prevent movement.
    */
@@ -194,6 +251,25 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+
+  public SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] moduleStates = new SwerveModulePosition[4];
+    moduleStates[0] = m_frontLeft.getPosition();
+    moduleStates[1] = m_frontRight.getPosition();
+    moduleStates[2] = m_rearLeft.getPosition();
+    moduleStates[3] = m_rearRight.getPosition();
+    return moduleStates;
+  }
+
+  public SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] moduleStates = new SwerveModuleState[4];
+    moduleStates[0] = m_frontLeft.getState();
+    moduleStates[1] = m_frontRight.getState();
+    moduleStates[2] = m_rearLeft.getState();
+    moduleStates[3] = m_rearRight.getState();
+    return moduleStates;
   }
 
   /**
